@@ -1,0 +1,4 @@
+*.out
+*.o
+*.h.gch
+bin/traceroute
