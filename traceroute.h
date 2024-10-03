@@ -5,14 +5,17 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <netinet/icmp6.h>
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
+#include <netinet/ip6.h>
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
 #include <poll.h>
 #include <pthread.h>
 #include <signal.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,10 +32,10 @@
 #include <time.h>
 #include <unistd.h>
 
-#define BUFSIZE 1500
-#define MAXLINE 4096    /* max text line length */
-#define MAXSOCKADDR 128 /* max socket address structure size */
-#define BUFFSIZE 8192   /* buffer size for reads and writes */
+#define BUFSIZE     1500
+#define MAXLINE     4096 /* max text line length */
+#define MAXSOCKADDR 128  /* max socket address structure size */
+#define BUFFSIZE    8192 /* buffer size for reads and writes */
 
 #define SA struct sockaddr
 typedef void Sigfunc(int); /* for signal handlers */
@@ -47,13 +50,14 @@ struct rec {               /* format of outgoing UDP data */
 char recvbuf[BUFSIZE];
 char sendbuf[BUFSIZE];
 
+int datalen; /* # bytes of data following ICMP header */
 char *host;
-u_short sport;
+u_short sport, dport;
 int nsent; /* add 1 for each sendto() */
 pid_t pid; /* our PID */
-int probe;
+int probe, nprobes;
 int sendfd, recvfd; /* send on UDP sock, read on raw ICMP sock */
-int ttl;
+int ttl, max_ttl;
 int verbose;
 
 struct proto {
@@ -68,8 +72,5 @@ struct proto {
     int ttllevel;            /* setsockopt() level to set TTL */
     int ttloptname;          /* setsockopt() name to set TTL */
 } * pr;
-
-#include "icmpv6.h"
-#include "ipv6.h"
 
 #endif // TRACEROUTE_H

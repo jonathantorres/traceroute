@@ -1,6 +1,6 @@
 CFLAGS = gcc -g -std=gnu11 -Wall -Wextra
 
-traceroute: traceroute.c traceroute.h ipv6.h icmpv6.h
+traceroute: traceroute.c traceroute.h
 	$(CFLAGS) $< -o ./bin/$@
 
 .PHONY: clean
